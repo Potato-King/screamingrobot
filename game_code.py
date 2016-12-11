@@ -54,51 +54,54 @@ def turnoff_rot_timer():
 rot_t = Timer(2, turnoff_rot_timer)
 
 
-@app.route("/screamingrobot")
+@app.route("/screamingrobot"):
+screaming_robot()
+
 def screaming_robot(state=state):
-	while timer = "on":
+	while time = "on":
+		servo (70)	#sets the 'head' to look straight ahead
 		check_overall()
 		check_lighting()
 		check_sound()
 		check_spacial()
 		#if blocked
 		if spacial_state = "blocked":
-			print "I'm blocked! AAAAAAAAAHHHHHH!"
+			print "I'm blocked!"
 			GPIO.output(BuzzPin, GPIO.HIGH)
 			screaming_state = True
+		        time.sleep(1)
+		        GPIO.output(BuzzPin, GPIO.LOW)
 			stress = 1
 			rot_timer = "on"
 			rot_t.start()
 			#rotate for 2 seconds
 			while rot_timer == "on":
-				right_rot()							
-		        time.sleep(1)
-		        GPIO.output(BuzzPin, GPIO.LOW)
-			#check if blocked again
+				right_rot()		
+				#check if blocked again	
 			check_spacial()
 			if spacial_state = "blocked":
 			        GPIO.output(BuzzPin, GPIO.HIGH)
-			        screaming_state = True		
+			        screaming_state = True
+		                time.sleep(2)
+		                GPIO.output(BuzzPin, GPIO.LOW)			
 				stress = 2
 				rot_timer = "on"
 				rot_t.start()
 			#rotate for 2 seconds
 				while rot_timer == "on":
 					right_rot()
-		                time.sleep(2)
-		                GPIO.output(BuzzPin, GPIO.LOW)	
 				check_spacial()	
 				if spacial_state = "blocked":
 				        GPIO.output(BuzzPin, GPIO.HIGH)
-			                screaming_state = True		                        	
+			                screaming_state = True
+		                        time.sleep(4)
+		                        GPIO.output(BuzzPin, GPIO.LOW)	
 					stress = 3
 					rot_timer = "on"
 					rot_t.start()
 			#rotate for 2 seconds
 					while rot_timer == "on":
 						right_rot()
-					time.sleep(4)
-		                        GPIO.output(BuzzPin, GPIO.LOW)
 					check_spacial()	
 					if spacial_state = "blocked":
 						stress = 4
@@ -125,6 +128,7 @@ def screaming_robot(state=state):
 def check_spacial(spacial_state=spacial_state):
 	if GPIO.input(vibePin) = False:
 		spacial_state = "free"
+		#return  This ended the if loop, should have been at the bottom of the if loop
 		fwd()
 		stress = 0
 	else:
@@ -133,6 +137,11 @@ def check_spacial(spacial_state=spacial_state):
 		bwd()
 		time.sleep(1)
 		stop()
+		servo(28)			#add a 'looking left and right action after being blocked'
+		time.sleep(1)
+		servo(112)
+		time.sleep(1)
+		return
 		#counter = 1
   		#beep        
     #if state = surrounded
@@ -140,6 +149,7 @@ def check_spacial(spacial_state=spacial_state):
  def check_lighting(light_state=light_state):
  	if GPIO.input(lightPin):
  		light_state = "light"
+ 		return
  	else:
  		light_state = "dark"	
  		GPIO.output(BuzzPin, GPIO.HIGH)
@@ -147,22 +157,29 @@ def check_spacial(spacial_state=spacial_state):
  		set_speed(255)
  		time.sleep(5)
  		set_speed(150)
+ 		return
 
 def check_sound(Sound_state=sound_state):
-	if GPIO.input(soundPin) > 100:
+	print GPIO.input(soundPin)  #so that we can see the sound level, good for testing
+	if GPIO.input(soundPin) > 100:   #do we want to increase this? 100 seems a bit high?
 		sound_state = "loud"
 		GPIO.output(BuzzPin, GPIO.HIGH)
  		screaming_state = True
  		set_speed(255)
+ 		right_rot()  #so that the robot turns around and escapes? 
  		time.sleep(5)
  		set_speed(150)
+ 		return
 	else:
 		sound_state = "quiet"	
+		return
 
 def check_overall(overall_state= overall_state):
 	if spacial_state = "free" and light_state = "light" and sound_state = "quiet":
+		print "I have a bad feeling about this... " #add a line...
 		GPIO.output(BuzzPin, GPIO.LOW)
 		screaming_state = False
+		return
 
 def end():
 	GPIO.cleanup()
